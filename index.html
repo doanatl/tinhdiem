@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tính GPA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#e9eff7;--paper:#fbfcfe;--ink:#14213d;--muted:#5b6b86;--line:#c5d2e6;--hl:#ffd84a;--hlink:#14213d;--bad:#b3261e;--ok:#1b7a43;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1626;--paper:#17213a;--ink:#e8eefc;--muted:#9fb0cf;--line:#2b3a5c;--bad:#ff8a80;--ok:#6fd49a}}
+:root[data-theme="dark"]{--bg:#0f1626;--paper:#17213a;--ink:#e8eefc;--muted:#9fb0cf;--line:#2b3a5c;--bad:#ff8a80;--ok:#6fd49a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Be Vietnam Pro",system-ui,sans-serif;line-height:1.5}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;font-weight:800;margin:8px 0 2px;letter-spacing:-.02em}
+p.sub{margin:0 0 14px;color:var(--muted)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px}
+.tabs button{flex:0 0 auto;padding:8px 14px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px}
+.course{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px}
+.f{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.f .n{flex:1 1 160px}.f .c{width:84px}.f .s{width:84px}.f .sp{width:112px}
+input,select{padding:8px 9px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit;min-width:0}
+select option{background:var(--paper);color:var(--ink)}
+input{width:100%}
+input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+input.err{border-color:var(--bad)}
+input.auto{font-weight:800;background:var(--bg)}
+.lbl{font-size:.75rem;color:var(--muted);display:block}
+.del{border:none;background:transparent;color:var(--muted);font-size:1.3rem;cursor:pointer;border-radius:8px}
+.del:hover{color:var(--bad)}
+.res{margin-top:8px;font-size:.9rem;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.res b{font-size:1.05rem}
+.warn{color:var(--bad)}
+.link{background:none;border:none;color:var(--ink);font:inherit;font-weight:600;text-decoration:underline;cursor:pointer;padding:0}
+.comps{margin-top:8px;padding:8px;background:var(--bg);border-radius:8px}
+.cr{display:flex;gap:6px;margin-bottom:6px;align-items:center}
+.cr .cn{flex:1 1 auto}.cr .cw,.cr .cs{width:76px;flex:0 0 76px}
+.add{padding:8px 14px;border:1px dashed var(--muted);background:transparent;color:var(--ink);border-radius:8px;font:inherit;font-weight:600;cursor:pointer;margin-right:6px}
+.result{margin:14px 0;display:flex;flex-wrap:wrap;gap:16px;align-items:center;background:var(--hl);color:var(--hlink);border-radius:10px;padding:16px 20px}
+.result{background:#d5deee;transition:background .3s}
+.result.rk-xs{background:#ffd84a}
+.result.rk-g{background:#7fdc9f}
+.result.rk-k{background:#8fd0f5}
+.result.rk-tb{background:#ffb86b}
+.result.rk-y{background:#ff9d8f}
+.result.rk-km{background:#e8787a}
+.big{font-size:3rem;font-weight:800;line-height:1;letter-spacing:-.03em}
+.result small{display:block;font-weight:600;opacity:.8}
+.result .side{margin-left:auto;text-align:right}
+table{border-collapse:collapse;width:100%;margin-top:6px}
+td,th{border:1px solid var(--line);padding:6px 10px;text-align:center}
+th{font-size:.85rem}
+details{margin-top:16px;color:var(--muted);font-size:.9rem}
+details table{width:auto}
+.danger{margin-top:16px;color:var(--muted);background:none;border:none;font:inherit;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+<h1>Tính GPA</h1>
+<p class="sub">Tính điểm từng môn theo thành phần, rồi tổng hợp GPA từng học kỳ (HK1 – HK8) và GPA tích lũy. Dữ liệu chỉ lưu trong trình duyệt của bạn. Bảng quy đổi và xếp loại theo quy chế một trường cụ thể, hãy đối chiếu với quy chế trường bạn.</p>
+<div class="tabs" id="tabs"></div>
+<div id="view"></div>
+<details>
+  <summary>Bảng quy đổi đang dùng</summary>
+  <table>
+    <tr><th>Thang 10</th><th>Chữ</th><th>Thang 4</th></tr>
+    <tr><td>9,5 – 10</td><td>A+</td><td>4,0</td></tr><tr><td>8,5 – 9,4</td><td>A</td><td>4,0</td></tr>
+    <tr><td>8,0 – 8,4</td><td>B+</td><td>3,5</td></tr><tr><td>7,0 – 7,9</td><td>B</td><td>3,0</td></tr>
+    <tr><td>6,5 – 6,9</td><td>C+</td><td>2,5</td></tr><tr><td>5,5 – 6,4</td><td>C</td><td>2,0</td></tr>
+    <tr><td>5,0 – 5,4</td><td>D+</td><td>1,5</td></tr><tr><td>4,0 – 4,9</td><td>D</td><td>1,0</td></tr>
+    <tr><td>Dưới 4,0</td><td>F</td><td>0</td></tr>
+  </table>
+  <p>Khi môn chưa nhập đủ thành phần, điểm môn được tạm tính bằng trung bình có trọng số của các phần đã nhập và vẫn vào GPA; điểm sẽ thay đổi khi bạn nhập thêm. Điểm môn được làm tròn 1 chữ số thập phân trước khi quy đổi. Công cụ chưa xử lý việc học lại, cải thiện điểm.</p>
+</details>
+<details id="bk"><summary>Sao lưu / chuyển dữ liệu sang thiết bị khác</summary>
+<p>Bấm "Tạo mã sao lưu" rồi sao chép toàn bộ đoạn mã. Trên thiết bị khác, dán mã vào ô này và bấm "Nạp dữ liệu".</p>
+<textarea id="code" rows="4" aria-label="Mã sao lưu" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit;margin-bottom:8px"></textarea>
+<button class="add" id="exp">Tạo mã sao lưu</button><button class="add" id="imp">Nạp dữ liệu</button><div id="bmsg" role="status" style="margin-top:6px"></div>
+</details>
+<button class="danger" id="wipe">Xóa toàn bộ dữ liệu</button>
+</main>
+<script>
+var KEY='gpa-data-v2',SPECIAL=['CT','VT','MT','DT','VP','RT','HT','CH','KD'];
+function blank(){return{n:'',c:'',s:'',sp:'',comps:[],open:false}}
+function fresh(){var a=[];for(var i=0;i<8;i++)a.push([blank(),blank(),blank()]);return a}
+var sems=fresh(),cur=0;
+try{var sv=JSON.parse(localStorage.getItem(KEY)||'null');if(sv&&sv.sems&&sv.sems.length===8){sems=sv.sems;cur=sv.cur||0}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({sems:sems,cur:cur},function(k,v){return k[0]==='_'?undefined:v}))}catch(e){}}
+function num(v){return parseFloat(String(v).replace(',','.'))}
+function fmt(x,d){return x.toFixed(d).replace('.',',')}
+function map(s){return s>=9.5?['A+',4]:s>=8.5?['A',4]:s>=8?['B+',3.5]:s>=7?['B',3]:s>=6.5?['C+',2.5]:s>=5.5?['C',2]:s>=5?['D+',1.5]:s>=4?['D',1]:['F',0]}
+function rcls(g){return g==null?'':g>=3.6?'rk-xs':g>=3.2?'rk-g':g>=2.5?'rk-k':g>=2?'rk-tb':g>=1?'rk-y':'rk-km'}
+function rank(g){return g>=3.6?'Xuất Sắc':g>=3.2?'Giỏi':g>=2.5?'Khá':g>=2?'Trung Bình':g>=1?'Yếu':'Kém'}
+// returns {c, inGpa, pass, s10, letter, p4, msg}
+function evalCourse(r){
+  var c=num(r.c),o={c:c>0?c:0,inGpa:false,pass:false,s10:null,letter:'',p4:0,msg:''};
+  if(!(c>0)){o.msg='Nhập số tín chỉ';return o}
+  var sp='';
+  if(sp==='CT'||sp==='VT'){o.inGpa=true;o.s10=0;o.letter='F';return o}
+  if(sp==='MT'||sp==='DT'){o.pass=true;o.letter='Đạt';return o}
+  if(sp){o.letter=sp==='KD'?'Không đạt':sp;return o}
+  var s=null;
+  if(r.comps.length){
+    var w=0,ew=0,t=0,bad=0;
+    r.comps.forEach(function(k){var kw=num(k.w),ks=num(k.s);if(kw>0)w+=kw;
+      if(k.s!==''&&(isNaN(ks)||ks<0||ks>10))bad++;
+      else if(k.s!==''&&kw>0){ew+=kw;t+=ks*kw}});
+    if(bad){o.msg='Điểm thành phần phải từ 0 đến 10';return o}
+    if(!ew){o.msg='Nhập điểm ít nhất một thành phần để tính tạm';return o}
+    s=t/ew;o.ew=ew;o.w=w;o.acc=t/100;
+    o.wwarn=Math.abs(w-100)>0.001;o.partial=o.wwarn||Math.abs(ew-w)>0.001;
+  }else{
+    var d=num(r.s);if(r.s===''){o.msg='Nhập điểm hoặc thêm thành phần';return o}
+    if(isNaN(d)||d<0||d>10){o.msg='Điểm phải từ 0 đến 10';return o}
+    s=d;
+  }
+  s=Math.round(s*10)/10;var m=map(s);
+  o.s10=s;o.letter=m[0];o.p4=m[1];o.inGpa=true;o.pass=m[1]>0;return o;
+}
+function agg(list){
+  var a={reg:0,passed:0,gc:0,gp:0,g10:0};
+  list.forEach(function(r){var e=evalCourse(r);if(e.inGpa){a.gc+=e.c;a.gp+=e.p4*e.c;a.g10+=e.s10*e.c}if(e.pass)a.passed+=e.c;if(e.inGpa||e.pass)a.reg+=e.c});
+  a.gpa=a.gc?a.gp/a.gc:null;a.avg=a.gc?a.g10/a.gc:null;return a;
+}
+function el(t,cls,html){var e=document.createElement(t);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+function tabs(){
+  var t=document.getElementById('tabs');t.innerHTML='';
+  for(var i=0;i<9;i++)(function(i){var b=el('button','',i<8?'HK'+(i+1):'Tổng hợp');b.setAttribute('aria-pressed',cur===i);b.onclick=function(){cur=i;save();tabs();view()};t.appendChild(b)})(i);
+}
+function view(){
+  var v=document.getElementById('view');v.innerHTML='';
+  if(cur===8){summary(v);return}
+  var list=sems[cur];
+  var box=el('div','result');box.setAttribute('aria-live','polite');
+  box.innerHTML='<div><div class="big" id="g4">–</div><small>GPA học kỳ '+(cur+1)+' (thang 4)</small></div><div class="side"><div style="font-size:1.5rem;font-weight:800" id="g10">–</div><small>Điểm TB thang 10</small><small id="gx"></small></div><div style="flex-basis:100%;font-weight:800;font-size:1.25rem" id="rk"></div>';
+  v.appendChild(box);
+  var sh=el('div','sheet');v.appendChild(sh);
+  list.forEach(function(r,i){sh.appendChild(courseEl(r,i,list))});
+  var a=el('button','add','+ Thêm môn');a.onclick=function(){list.push(blank());save();view()};sh.appendChild(a);
+  var rs=el('button','link','Xóa học kỳ này');rs.onclick=function(){if(confirm('Xóa toàn bộ môn của HK'+(cur+1)+'?')){sems[cur]=[blank(),blank(),blank()];save();view()}};sh.appendChild(rs);
+  calc();
+}
+function courseEl(r,i,list){
+  r.sp='';
+  var d=el('div','course');
+  var opts='<option value="">Điểm số</option>'+SPECIAL.map(function(x){return'<option value="'+x+'"'+(r.sp===x?' selected':'')+'>'+x+'</option>'}).join('');
+  d.innerHTML='<div class="f"><div class="n"><span class="lbl">Môn học</span><input class="in-n" placeholder="Môn '+(i+1)+'"></div>'+
+   '<div class="c"><span class="lbl">Tín chỉ</span><select class="in-c"><option value="">Chọn</option>'+[1,2,3,4,5,6].map(function(x){return'<option value="'+x+'">'+x+'</option>'}).join('')+'</select></div>'+
+   '<div class="s"><span class="lbl">Điểm /10</span><input class="in-s" inputmode="decimal" placeholder="8,5"></div>'+
+   
+   '<button class="del" aria-label="Xóa môn" title="Xóa môn">×</button></div>'+
+   '<div class="res"><span class="rt"></span><button class="link tg"></button></div><div class="cbox"></div>';
+  var q=function(s){return d.querySelector(s)};
+  q('.in-n').value=r.n;q('.in-c').value=r.c;if(q('.in-c').value!==String(r.c))r.c='';q('.in-s').value=r.s;
+  q('.in-n').oninput=function(){r.n=this.value;save()};
+  q('.in-c').onchange=function(){r.c=this.value;calc();save()};
+  q('.in-s').oninput=function(){r.s=this.value;calc();save()};
+  q('.del').onclick=function(){list.splice(i,1);if(!list.length)list.push(blank());save();view()};
+  var tg=q('.tg');
+  tg.textContent=r.open?'Ẩn thành phần':(r.comps.length?'Sửa thành phần ('+r.comps.length+')':'Nhập theo thành phần');
+  tg.onclick=function(){r.open=!r.open;if(r.open&&!r.comps.length)r.comps=[{n:'Chuyên cần',w:'10',s:''},{n:'Giữa kỳ',w:'30',s:''},{n:'Cuối kỳ',w:'60',s:''}];save();view()};
+  var specialOn=false;
+  q('.in-s').disabled=specialOn;
+  q('.in-s').readOnly=r.comps.length>0;
+  q('.in-s').classList.toggle('auto',r.comps.length>0);
+  if(specialOn)tg.style.display='none';
+  if(r.open&&!specialOn){
+    var cb=q('.cbox'),w=el('div','comps');cb.appendChild(w);
+    r.comps.forEach(function(k,j){
+      var row=el('div','cr','<input class="cn" placeholder="Tên thành phần" aria-label="Tên thành phần"><input class="cw" inputmode="decimal" placeholder="%" aria-label="Trọng số phần trăm"><input class="cs" inputmode="decimal" placeholder="Điểm" aria-label="Điểm thành phần"><button class="del" aria-label="Xóa thành phần">×</button>');
+      var ii=row.querySelectorAll('input');ii[0].value=k.n;ii[1].value=k.w;ii[2].value=k.s;
+      ii[0].oninput=function(){k.n=this.value;save()};
+      ii[1].oninput=function(){k.w=this.value;calc();save()};
+      ii[2].oninput=function(){k.s=this.value;calc();save()};
+      row.querySelector('.del').onclick=function(){r.comps.splice(j,1);save();view()};
+      w.appendChild(row);
+    });
+    var ad=el('button','add','+ Thêm thành phần');ad.onclick=function(){r.comps.push({n:'',w:'',s:''});save();view()};
+    w.appendChild(ad);
+    w.appendChild(el('span','lbl','Điểm môn = tổng (điểm × trọng số %). Tổng trọng số phải bằng 100%.'));
+  }
+  r._el=d;return d;
+}
+function calc(){
+  var list=sems[cur];
+  list.forEach(function(r){
+    if(!r._el)return;var e=evalCourse(r),rt=r._el.querySelector('.rt');
+    if(r.comps.length&&!r.sp){var si=r._el.querySelector('.in-s');si.value=e.s10===null?'':fmt(e.s10,1)}
+    if(e.s10!==null&&e.letter)rt.innerHTML='Điểm môn <b>'+fmt(e.s10,1)+'</b> · Chữ <b>'+e.letter+'</b> · Thang 4 <b>'+fmt(e.p4,1)+'</b>'+(e.pass?'':' <span class="warn">(không đạt)</span>')+(e.partial&&!e.wwarn?'<br><span class="warn">Tạm tính: mới có điểm '+fmt(e.ew,0)+'% / '+fmt(e.w,0)+'% trọng số, đã tích lũy '+fmt(e.acc,2)+' điểm. Điểm này là trung bình các phần đã nhập.</span>':'')+(e.wwarn?'<br><span class="warn">Tổng trọng số là '+fmt(e.w,0)+'%, cần đủ 100%. Đang tạm tính trên phần đã nhập.</span>':'');
+    else if(e.letter)rt.innerHTML='Kết quả: <b>'+e.letter+'</b>'+(r.sp?' (không tính vào GPA)':'');
+    else rt.innerHTML='<span class="'+(e.msg&&(r.s||r.c||r.comps.length)?'warn':'')+'">'+(e.msg||'')+'</span>';
+    if(r.sp==='CT'||r.sp==='VT')rt.innerHTML='Kết quả: <b>0 (F)</b>, tính vào GPA';
+  });
+  var a=agg(list);
+  document.getElementById('g4').textContent=a.gpa==null?'–':fmt(a.gpa,2);
+  document.getElementById('g10').textContent=a.avg==null?'–':fmt(a.avg,2);
+  document.getElementById('gx').textContent='Đạt '+fmt(a.passed,0)+'/'+fmt(a.reg,0)+' tín chỉ';
+  document.getElementById('rk').textContent=a.gpa==null?'':'Xếp loại học kỳ: '+rank(a.gpa);
+  document.querySelector('.result').className='result '+rcls(a.gpa);
+}
+function summary(v){
+  var all=[];sems.forEach(function(s){all=all.concat(s)});
+  var a=agg(all);
+  var box=el('div','result '+rcls(a.gpa));
+  box.innerHTML='<div><div class="big">'+(a.gpa==null?'–':fmt(a.gpa,2))+'</div><small>GPA tích lũy (thang 4)</small></div><div class="side"><div style="font-size:1.5rem;font-weight:800">'+(a.avg==null?'–':fmt(a.avg,2))+'</div><small>Điểm TB thang 10</small><small>'+(a.gpa==null?'':'Xếp loại: '+rank(a.gpa)+' · ')+'Tích lũy '+fmt(a.passed,0)+' tín chỉ</small></div>';
+  v.appendChild(box);
+  var sh=el('div','sheet'),h='<table><tr><th>Học kỳ</th><th>Tín chỉ đạt</th><th>GPA HK</th><th>Xếp loại HK</th><th>TB thang 10</th><th>GPA tích lũy</th></tr>',cum=[];
+  sems.forEach(function(s,i){
+    cum=cum.concat(s);var x=agg(s),y=agg(cum);
+    h+='<tr><td>HK'+(i+1)+'</td><td>'+fmt(x.passed,0)+'/'+fmt(x.reg,0)+'</td><td>'+(x.gpa==null?'–':fmt(x.gpa,2))+'</td><td>'+(x.gpa==null?'–':rank(x.gpa))+'</td><td>'+(x.avg==null?'–':fmt(x.avg,2))+'</td><td>'+(y.gpa==null?'–':fmt(y.gpa,2))+'</td></tr>';
+  });
+  sh.innerHTML='<div style="overflow-x:auto">'+h+'</table></div>';
+  v.appendChild(sh);
+}
+function bm(t){document.getElementById('bmsg').textContent=t}
+document.getElementById('exp').onclick=function(){var c=document.getElementById('code');c.value=JSON.stringify({v:2,sems:sems},function(k,v){return k[0]==='_'?undefined:v});c.focus();c.select();bm('Đã tạo mã. Hãy sao chép toàn bộ đoạn mã trong ô.')};
+document.getElementById('imp').onclick=function(){
+  try{
+    var d=JSON.parse(document.getElementById('code').value);
+    if(!d||!d.sems||d.sems.length!==8||!d.sems.every(Array.isArray))throw 0;
+    if(!confirm('Nạp dữ liệu sẽ ghi đè dữ liệu hiện tại. Tiếp tục?'))return;
+    sems=d.sems.map(function(s){var m=s.map(function(r){return{n:String(r.n||''),c:String(r.c||''),s:String(r.s||''),sp:'',open:false,comps:Array.isArray(r.comps)?r.comps.map(function(k){return{n:String(k.n||''),w:String(k.w||''),s:String(k.s||'')}}):[]}});return m.length?m:[blank()]});
+    cur=0;save();tabs();view();bm('Đã nạp dữ liệu.');
+  }catch(e){bm('Mã không hợp lệ, hãy dán đủ toàn bộ đoạn mã.')}
+};
+document.getElementById('wipe').onclick=function(){if(confirm('Xóa toàn bộ dữ liệu của cả 8 học kỳ?')){sems=fresh();cur=0;save();tabs();view()}};
+tabs();view();
+</script>
+</body>
+</html>
